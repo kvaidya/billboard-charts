@@ -2,6 +2,7 @@
 
 import datetime
 import json
+import random
 import re
 import sys
 import warnings
@@ -35,6 +36,16 @@ _CHART_HEADER_CELLS = "div.o-chart-results-list-header__item span"
 _MINISTATS_CELL = "div.chart-list-item__ministats-cell"
 _MINISTATS_CELL_HEADING = "span.chart-list-item__ministats-cell-heading"
 
+
+# User agents for randomization
+_USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 16_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (iPad; CPU OS 15_7 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Android 12; Mobile; rv:109.0) Gecko/109.0 Firefox/109.0",
+]
 
 class BillboardNotFoundException(Exception):
     pass
@@ -506,6 +517,7 @@ class ChartData:
 
 def _get_session_with_retries(max_retries):
     session = requests.Session()
+    session.headers.update({"User-Agent": random.choice(_USER_AGENTS)})
     session.mount(
         "https://www.billboard.com",
         requests.adapters.HTTPAdapter(max_retries=max_retries),
