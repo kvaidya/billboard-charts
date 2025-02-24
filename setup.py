@@ -6,7 +6,7 @@ with open("README.md") as f:
     long_description = f.read()
 
 setup(
-    name="billboard.py",
+    name="billboard",
     version="7.1.0",  # Don't forget to update CHANGELOG.md!
     description="Python API for downloading Billboard charts",
     long_description=long_description,

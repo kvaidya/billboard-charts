@@ -6,6 +6,8 @@ import random
 import re
 import sys
 import warnings
+import time
+import random
 
 from bs4 import BeautifulSoup
 import requests
@@ -505,6 +507,7 @@ class ChartData:
             url = "https://www.billboard.com/charts/%s/%s" % (self.name, self.date)
 
         session = _get_session_with_retries(max_retries=self._max_retries)
+        time.sleep(random.uniform(1, 3))
         req = session.get(url, timeout=self._timeout)
         if req.status_code == 404:
             message = "Chart not found (perhaps the name is misspelled?)"
@@ -516,10 +519,19 @@ class ChartData:
 
 
 def _get_session_with_retries(max_retries):
+    user_agents = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.77 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
+    ]
     session = requests.Session()
     session.headers.update({"User-Agent": random.choice(_USER_AGENTS)})
     session.mount(
         "https://www.billboard.com",
         requests.adapters.HTTPAdapter(max_retries=max_retries),
     )
+    session.headers.update({
+        "User-Agent": random.choice(user_agents)
+    })
     return session
